@@ -93,7 +93,7 @@ class BootScene extends Phaser.Scene {
         SoundEffects.init();
 
         // Load Background Music
-        this.load.audio('bg_music', 'Assets/music/Damtaro - Combat (freetouse.com) (1).mp3');
+        this.load.audio('bg_music', 'assets/music/bg_music.mp3');
     }
 
     create() {
@@ -120,6 +120,7 @@ class BootScene extends Phaser.Scene {
         });
 
         // Delay slightly for the perfect retro loading feel, then boot menu!
+        console.log("Loading complete, starting MenuScene...");
         this.time.delayedCall(1000, () => {
             this.scene.start('MenuScene');
         });
