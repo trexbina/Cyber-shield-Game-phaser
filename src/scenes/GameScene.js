@@ -40,6 +40,12 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        // 0. Ensure Background Music is playing
+        const bgMusic = this.sound.get('bg_music');
+        if (bgMusic && !bgMusic.isPlaying) {
+            bgMusic.play();
+        }
+
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
@@ -221,8 +227,8 @@ class GameScene extends Phaser.Scene {
         // B. Handle player flight movements (WASD / Arrow keys)
         this.handlePlayerMovement();
 
-        // C. Handle laser fire (Spacebar holds or presses)
-        if (this.spacebar.isDown && time > this.lastFired) {
+        // C. Handle laser fire (Spacebar or Left Click holds or presses)
+        if ((this.spacebar.isDown || this.input.activePointer.isDown) && time > this.lastFired) {
             this.firePlayerLaser();
             this.lastFired = time + (this.rapidActive ? this.fireDelay / 2 : this.fireDelay);
         }

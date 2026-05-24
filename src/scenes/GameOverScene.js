@@ -21,6 +21,12 @@ class GameOverScene extends Phaser.Scene {
     }
 
     create() {
+        // 0. Ensure Background Music is playing
+        const bgMusic = this.sound.get('bg_music');
+        if (bgMusic && !bgMusic.isPlaying) {
+            bgMusic.play();
+        }
+
         // 1. Setup slowly scrolling starfield background
         this.background = this.add.tileSprite(512, 384, 1024, 768, 'star_bg');
         this.background.setScrollFactor(0);

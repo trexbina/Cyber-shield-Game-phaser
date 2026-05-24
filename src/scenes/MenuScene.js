@@ -7,6 +7,14 @@ class MenuScene extends Phaser.Scene {
     }
 
     create() {
+        // 0. Background Music Management
+        if (!this.sound.get('bg_music')) {
+            this.bgMusic = this.sound.add('bg_music', { volume: 0.5, loop: true });
+            this.bgMusic.play();
+        } else if (!this.sound.get('bg_music').isPlaying) {
+            this.sound.get('bg_music').play();
+        }
+
         // 1. Setup slowly scrolling starfield background tile sprite
         this.background = this.add.tileSprite(512, 384, 1024, 768, 'star_bg');
         this.background.setScrollFactor(0);

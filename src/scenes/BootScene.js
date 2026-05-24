@@ -91,6 +91,9 @@ class BootScene extends Phaser.Scene {
 
         // Initialize sound synthesizers
         SoundEffects.init();
+
+        // Load Background Music
+        this.load.audio('bg_music', 'Assets/music/Damtaro - Combat (freetouse.com) (1).mp3');
     }
 
     create() {
