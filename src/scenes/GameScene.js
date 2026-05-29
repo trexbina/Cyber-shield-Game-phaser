@@ -218,11 +218,11 @@ class GameScene extends Phaser.Scene {
         // A. Scroll starfield vertically downward with dynamic speed
         this.background.tilePositionY -= this.scrollSpeed;
 
-        // B. Handle player flight movements (WASD / Arrow keys)
+        // B. Handle player flight movements (WASD / Arrow keys / Touch Drag)
         this.handlePlayerMovement();
 
-        // C. Handle laser fire (Spacebar holds or presses)
-        if (this.spacebar.isDown && time > this.lastFired) {
+        // C. Handle laser fire (Spacebar holds or presses, or screen touch)
+        if ((this.spacebar.isDown || this.input.activePointer.isDown) && time > this.lastFired) {
             this.firePlayerLaser();
             this.lastFired = time + (this.rapidActive ? this.fireDelay / 2 : this.fireDelay);
         }
@@ -285,26 +285,49 @@ class GameScene extends Phaser.Scene {
         let vx = 0;
         let vy = 0;
 
-        if (this.cursors.left.isDown || this.wasd.left.isDown) {
-            vx = -speed;
-        } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
-            vx = speed;
-        }
+        const pointer = this.input.activePointer;
+        const isTouch = this.sys.game.device.input.touch;
 
-        if (this.cursors.up.isDown || this.wasd.up.isDown) {
-            vy = -speed;
-        } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
-            vy = speed;
-        }
+        if (pointer.isDown) {
+            // Mobile / Touch Pointer logic
+            const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, pointer.x, pointer.y);
+            
+            if (distance > 10) {
+                // Determine direction vector
+                const dx = pointer.x - this.player.x;
+                const dy = pointer.y - this.player.y;
+                const angle = Math.atan2(dy, dx);
+                
+                // Move much faster towards pointer to catch up (feels responsive)
+                vx = Math.cos(angle) * (speed * 1.5);
+                vy = Math.sin(angle) * (speed * 1.5);
+                this.player.setVelocity(vx, vy);
+            } else {
+                this.player.setVelocity(0, 0);
+            }
+        } else {
+            // Keyboard logic
+            if (this.cursors.left.isDown || this.wasd.left.isDown) {
+                vx = -speed;
+            } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
+                vx = speed;
+            }
 
-        // Set player velocity
-        this.player.setVelocity(vx, vy);
+            if (this.cursors.up.isDown || this.wasd.up.isDown) {
+                vy = -speed;
+            } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
+                vy = speed;
+            }
+
+            // Set player velocity
+            this.player.setVelocity(vx, vy);
+        }
 
         // Rotate thruster engine flare based on horizontal movement
-        if (vx < 0) {
+        if (vx < -20) {
             this.player.setAngle(-5);
             this.thrusterParticles.followOffset.x = 4;
-        } else if (vx > 0) {
+        } else if (vx > 20) {
             this.player.setAngle(5);
             this.thrusterParticles.followOffset.x = -4;
         } else {
